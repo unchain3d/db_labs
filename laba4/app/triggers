@@ -1,0 +1,107 @@
+1. Тригер заборони 2 нулів
+
+DROP TRIGGER IF EXISTS check_position_trigger;
+DELIMITER //
+CREATE TRIGGER check_position_trigger
+BEFORE INSERT ON modules
+FOR EACH ROW
+BEGIN
+    IF NEW.modules_position % 100 = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'for what?';
+    END IF;
+END;
+//
+DROP TRIGGER IF EXISTS check_position_update_trigger;
+CREATE TRIGGER check_position_update_trigger
+BEFORE UPDATE ON modules
+FOR EACH ROW
+BEGIN
+    IF NEW.modules_position % 100 = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'but for what?';
+    END IF;
+END;
+//
+DELIMITER ;
+
+2. Тригер, що забороняє видалення
+
+DROP TRIGGER IF EXISTS before_delete_trigger
+DELIMITER //
+CREATE TRIGGER before_delete_trigger
+BEFORE DELETE ON courses
+FOR EACH ROW
+BEGIN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'you can't delete this data';
+END;
+//
+DELIMITER ;
+
+3. Тригер заборони 2 нулів
+
+DROP TRIGGER IF EXISTS check_position_trigger;
+DELIMITER //
+CREATE TRIGGER check_position_trigger
+BEFORE INSERT ON modules
+FOR EACH ROW
+BEGIN
+    IF NEW.modules_position % 100 = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'for what,truly?';
+    END IF;
+END;
+//
+DROP TRIGGER IF EXISTS check_position_update_trigger;
+CREATE TRIGGER check_position_update_trigger
+BEFORE UPDATE ON modules
+FOR EACH ROW
+BEGIN
+    IF NEW.modules_position % 100 = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'for all';
+    END IF;
+END;
+//
+DELIMITER ;
+
+3. Тригер заборони модифікації
+
+DELIMITER //
+CREATE TRIGGER before_update_flights
+BEFORE UPDATE ON flights
+FOR EACH ROW
+BEGIN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'u cant modificate flights';
+END;
+//
+DELIMITER ;
+
+4. Тригер забезпечення 1:n зв'язків
+
+DELIMITER //
+DROP TRIGGER IF EXISTS before_update_workplace;
+CREATE TRIGGER before_update_workplace
+BEFORE UPDATE ON workplace_flight
+FOR EACH ROW
+BEGIN
+    IF Not exists(Select * from flights WHERE id = NEW.id_flight ) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'This object does not exist';
+    END IF;
+END;
+//
+DROP TRIGGER IF EXISTS before_insert_workplace;
+CREATE TRIGGER before_insert_workplace
+BEFORE INSERT ON workplace_flight
+FOR EACH ROW
+BEGIN
+    IF Not exists(Select * from flights WHERE id = NEW.id_flight ) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'This object does not exist';
+    END IF;
+END;
+//
+DELIMITER ;
